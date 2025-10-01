@@ -19,18 +19,18 @@ function draw() {
 
   //with if-else statement
   if (shapeHeight < horizon) {
-    background("lightblue"); // blue if above horizon
+    background("purple"); // blue if above horizon
     
   } else {
     background("grey"); // grey if below horizon
   }
 
   //sun
-  fill("white");
+  fill("yellow");
   
   rect(width/4, shapeHeight, width/2);
   textSize(20);
-  fill("black");
+  fill("white");
   text('Hi! My name is Arie Bolotin', currentWidth/2, shapeHeight/2);
   
 
