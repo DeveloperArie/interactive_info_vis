@@ -28,27 +28,37 @@ registerSketch('sk3', function (p) {
     const HH = p.nf(p.hour(),   2);
     const MM = p.nf(p.minute(), 2);
     const SS = p.nf(p.second(), 2);
+    const sep = ":";
 
     const clockX = ox + boardSize / 2;
-    
     const clockY = Math.max(oy - cell * 0.4, 24);
 
     const baseSize = Math.min(56, Math.round(p.width * 0.06));
     p.textSize(baseSize);
-
     p.textAlign(p.LEFT, p.CENTER);
-    const hm = `${HH}:${MM}:`;
-    const hmWidth = p.textWidth(hm);
-    const ssWidth = p.textWidth(SS);
-    const totalWidth = hmWidth + ssWidth;
 
-    const startX = clockX - totalWidth / 2;
+    const wHH  = p.textWidth(HH);
+    const wSep = p.textWidth(sep);
+    const wMM  = p.textWidth(MM);
+    const wSS  = p.textWidth(SS);
+    const totalW = wHH + wSep + wMM + wSep + wSS;
+
+    let x = clockX - totalW / 2;
 
     p.fill(30);
-    p.text(hm, startX, clockY);
+    p.text(HH, x, clockY); x += wHH;
 
-    p.fill(220, 60, 40);
-    p.text(SS, startX + hmWidth, clockY);
+    p.fill(30);
+    p.text(sep, x, clockY); x += wSep;
+
+    p.fill('#0077ff');
+    p.text(MM, x, clockY); x += wMM;
+
+    p.fill(30);
+    p.text(sep, x, clockY); x += wSep;
+
+    p.fill('#e74c3c');
+    p.text(SS, x, clockY);
 
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
