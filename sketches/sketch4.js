@@ -50,11 +50,23 @@ registerSketch('sk4', function (p) {
     const carWid = laneW * 0.22;
 
     drawCarRect(
-      cx, cy,         // track center in world coords
-      rSec, theta,    // radius + angle
+      cx, cy,     
+      rSec, theta,  
       carLen, carWid,
       '#a56b39', 'S'
     );
+
+    const now = new Date();
+    const msIntoHour = now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds();
+    const minFrac = msIntoHour / 3600000;               
+    const thetaMin = -p.HALF_PI + minFrac * p.TWO_PI;
+
+    const rMin = R_inner + laneW * 0.75; 
+    const mLen = laneW * 0.38;
+    const mWid = laneW * 0.24;
+
+    drawCarRect(cx, cy, rMin, thetaMin, mLen, mWid, '#2ecc71', 'M');
+
   };
 
   function drawDashedRing(radius, dashLen, count) {
@@ -124,21 +136,17 @@ registerSketch('sk4', function (p) {
   }
 
   function drawCarRect(cx, cy, radius, angle, len, wid, colorHex, label) {
-    // position on the circle
     const x = cx + Math.cos(angle) * radius;
     const y = cy + Math.sin(angle) * radius;
 
     p.push();
     p.translate(x, y);
-    // orient the LONG side tangent to the circle
     p.rotate(angle + p.HALF_PI);
 
-    // body
     p.noStroke();
     p.fill(colorHex);
     p.rect(0, 0, len, wid, wid * 0.25);
 
-    // label
     p.fill(255);
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(wid * 0.9);
