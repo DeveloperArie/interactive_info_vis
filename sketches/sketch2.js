@@ -51,24 +51,19 @@ registerSketch('sk2', function (p) {
     const MM = p.nf(p.minute(), 2);
     const SS = p.nf(p.second(), 2);
 
-    // center horizontally between stock center (cx) and muzzle tip
     const clockX = (cx + muzzleX) / 2;
-    // place above the stock
+
     const clockY = cy - h * 1.2;
 
-    // responsive font sizes
     const baseSize = Math.min(56, Math.round(p.width * 0.05));
 
-
-    // draw HH:MM:
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(baseSize);
     p.fill(30);
     p.text(HH + ":" + MM + ":", clockX - baseSize, clockY);
 
-    // draw SS in color, slightly larger
     p.textSize(baseSize);
-    p.fill(220, 60, 40);                      // highlight color for seconds
+    p.fill(220, 60, 40);     
     p.text(SS, clockX + baseSize, clockY);
 
     const sNow = p.second();
@@ -129,11 +124,9 @@ registerSketch('sk2', function (p) {
   function drawMuzzleFlash(x, y, size) {
     p.push(); p.translate(x, y); p.noStroke();
 
-    // soft glow
     p.fill(255, 225, 120, 220);
     p.ellipse(0, 0, size * 1.2, size * 0.8);
 
-    // spikes
     p.fill(255, 180, 60, 240);
     const n = 7, rOuter = size * 1.0, rInner = size * 0.35;
     for (let i = 0; i < n; i++) {
@@ -146,7 +139,6 @@ registerSketch('sk2', function (p) {
       );
     }
 
-    // hot core
     p.fill(255, 255, 255, 245);
     p.ellipse(0, 0, size * 0.35, size * 0.35);
     p.pop();
