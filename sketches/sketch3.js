@@ -51,7 +51,7 @@ registerSketch('sk3', function (p) {
     p.fill(30);
     p.text(sep, x, clockY); x += wSep;
 
-    p.fill('#0077ff');
+    p.fill('#2ecc71');
     p.text(MM, x, clockY); x += wMM;
 
     p.fill(30);
