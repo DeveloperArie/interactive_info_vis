@@ -1,6 +1,9 @@
 // Instance-mode sketch for tab 2
 registerSketch('sk2', function (p) {
   const MAX = 800;
+  let lastSec = -1;
+  let flashUntil = 0;
+  let muzzleX = 0, muzzleY = 0;
 
   p.setup = function () {
     const w = Math.min(p.windowWidth, MAX);
@@ -34,10 +37,30 @@ registerSketch('sk2', function (p) {
     const w2 = p.width * .2; 
     const h2 = p.height * .2;
       
-
+    p.fill('#a56b39');
     drawTrapezoidStockFacingRight(cx, cy, w, h);
+    
     drawHandle(cx1, cy1, w1, h1);
+
+    p.fill('#a56b39');
     drawBarrel(cx2, cy2, w2, h2);
+
+    muzzleX = cx2 + 2.4 * w2;
+    muzzleY = cy2 + 0.03 * h2;
+
+    p.fill(40);
+    p.textSize(18);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(`${p.nf(p.hour(),2)}:${p.nf(p.minute(),2)}:${p.nf(p.second(),2)}`, 12, 10);
+
+    const sNow = p.second();
+    if (sNow !== lastSec) {
+      lastSec = sNow;
+      flashUntil = p.millis() + 110; 
+    }
+    if (p.millis() < flashUntil) {
+      drawMuzzleFlash(muzzleX, muzzleY, h2 * 0.7); 
+}
   };
 
   function drawTrapezoidStockFacingRight(x, y, w, h) {
@@ -82,6 +105,32 @@ registerSketch('sk2', function (p) {
     p.vertex(-w * 1, h * 0.25); // left bottom
     p.endShape(p.CLOSE);
 
+    p.pop();
+  }
+
+  function drawMuzzleFlash(x, y, size) {
+    p.push(); p.translate(x, y); p.noStroke();
+
+    // soft glow
+    p.fill(255, 225, 120, 220);
+    p.ellipse(0, 0, size * 1.2, size * 0.8);
+
+    // spikes
+    p.fill(255, 180, 60, 240);
+    const n = 7, rOuter = size * 1.0, rInner = size * 0.35;
+    for (let i = 0; i < n; i++) {
+      const a  = (i / n) * p.TWO_PI;
+      const a2 = a + p.TWO_PI / (2 * n);
+      p.triangle(
+        0, 0,
+        Math.cos(a) * rOuter,  Math.sin(a) * rOuter,
+        Math.cos(a2) * rInner, Math.sin(a2) * rInner
+      );
+    }
+
+    // hot core
+    p.fill(255, 255, 255, 245);
+    p.ellipse(0, 0, size * 0.35, size * 0.35);
     p.pop();
   }
   
