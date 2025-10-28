@@ -5,6 +5,7 @@ registerSketch('sk4', function (p) {
   p.setup = function () {
     p.createCanvas(Math.min(p.windowWidth, MAX), Math.min(p.windowHeight, MAX));
     p.noStroke();
+    p.rectMode(p.CENTER);
   };
 
   p.draw = function () {
@@ -39,7 +40,21 @@ registerSketch('sk4', function (p) {
     drawDashedRing(dashR, laneW * 0.08, 64);
     drawStartFinish(-p.HALF_PI, R_inner, R_outer, laneW);
 
-    p.pop();
+    p.pop()
+
+    const t = (p.millis() % 60000) / 60000;
+    const theta = -p.HALF_PI + t * p.TWO_PI;
+    const rSec = R_inner + laneW * 0.25;
+
+    const carLen = laneW * 0.35;
+    const carWid = laneW * 0.22;
+
+    drawCarRect(
+      cx, cy,         // track center in world coords
+      rSec, theta,    // radius + angle
+      carLen, carWid,
+      '#a56b39', 'S'
+    );
   };
 
   function drawDashedRing(radius, dashLen, count) {
@@ -106,7 +121,30 @@ registerSketch('sk4', function (p) {
       }
     }
     p.pop();
-}
+  }
+
+  function drawCarRect(cx, cy, radius, angle, len, wid, colorHex, label) {
+    // position on the circle
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+
+    p.push();
+    p.translate(x, y);
+    // orient the LONG side tangent to the circle
+    p.rotate(angle + p.HALF_PI);
+
+    // body
+    p.noStroke();
+    p.fill(colorHex);
+    p.rect(0, 0, len, wid, wid * 0.25);
+
+    // label
+    p.fill(255);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textSize(wid * 0.9);
+    p.text(label, 0, 0.5);
+    p.pop();
+  }
 
   p.windowResized = function () {
     p.resizeCanvas(Math.min(p.windowWidth, MAX), Math.min(p.windowHeight, MAX));
