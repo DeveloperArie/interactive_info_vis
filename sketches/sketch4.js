@@ -37,6 +37,7 @@ registerSketch('sk4', function (p) {
     drawCurbRing(R_inner - curbW * 0.5, curbW, 30);
 
     drawDashedRing(dashR, laneW * 0.08, 64);
+    drawStartFinish(-p.HALF_PI, R_inner, R_outer, laneW);
 
     p.pop();
   };
@@ -75,6 +76,37 @@ registerSketch('sk4', function (p) {
       p.pop();
     }
   }
+
+  function drawStartFinish(angle, rInner, rOuter, laneW) {
+    const rMid = (rOuter + rInner) / 2;
+
+    const bandThickness = (rOuter - rInner) * 1; 
+    const bandLength    = laneW * 0.8;          
+
+    const cx = Math.cos(angle) * rMid;
+    const cy = Math.sin(angle) * rMid;
+
+    const rows = 18;     
+    const cols = 6;       
+    const sq   = Math.min(bandThickness / rows, bandLength / cols);
+    const w    = cols * sq;
+    const h    = rows * sq;
+
+    p.push();
+    p.translate(cx, cy);
+    p.rotate(angle + p.HALF_PI);
+    p.rectMode(p.CORNER);
+
+    const ox = -w / 2;
+    const oy = -h / 2;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        p.fill((r + c) % 2 === 0 ? 255 : 30);
+        p.rect(ox + c * sq, oy + r * sq, sq, sq);
+      }
+    }
+    p.pop();
+}
 
   p.windowResized = function () {
     p.resizeCanvas(Math.min(p.windowWidth, MAX), Math.min(p.windowHeight, MAX));
