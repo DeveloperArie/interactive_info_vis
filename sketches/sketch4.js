@@ -13,7 +13,7 @@ registerSketch('sk4', function (p) {
     const h = Math.min(p.windowHeight, MAX);
     if (p.width !== w || p.height !== h) p.resizeCanvas(w, h);
 
-    p.background(220);
+    p.background('#dff3c4');
 
     const cx = p.width / 2;
     const cy = p.height / 2;
@@ -85,6 +85,35 @@ registerSketch('sk4', function (p) {
     const hWid  = laneW * 0.22;
 
     drawCarRect(cx, cy, rHour, thetaHour, hLen, hWid, '#0077ff', 'H');
+
+    const HH = p.nf(((p.hour() % 12) || 12), 2);   // 12-hour
+    const MM = p.nf(p.minute(), 2);
+    const SS = p.nf(p.second(), 2);
+
+    const sep = ":";
+
+    // size & position
+    const clockSize = Math.min(64, Math.round(p.width * 0.06));
+    p.textSize(clockSize);
+    p.textAlign(p.LEFT, p.BASELINE);
+
+    // measure to center precisely
+    const wHH  = p.textWidth(HH);
+    const wMM  = p.textWidth(MM);
+    const wSS  = p.textWidth(SS);
+    const wSep = p.textWidth(sep);
+    const totalW = wHH + wSep + wMM + wSep + wSS;
+
+    // put it just above the track
+    const yTop = cy * 1;   // tweak the 0.55 if needed
+    let x = cx - totalW / 2;
+
+    // draw colored segments
+    p.fill('#0077ff');  p.text(HH, x, yTop);      x += wHH;
+    p.fill(30);         p.text(sep, x, yTop);     x += wSep;
+    p.fill('#2ecc71');  p.text(MM, x, yTop);      x += wMM;
+    p.fill(30);         p.text(sep, x, yTop);     x += wSep;
+    p.fill('#e74c3c');  p.text(SS, x, yTop);
 
   };
 
