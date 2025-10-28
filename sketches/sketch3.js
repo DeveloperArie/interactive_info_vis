@@ -61,7 +61,6 @@ registerSketch('sk3', function (p) {
     const px = ox + (c + 0.5) * cell;
     const py = oy + (r + 0.5) * cell;
 
-    // piece
     p.push();
     p.fill(200, 30, 50);
     p.circle(px, py, cell * 0.65);
@@ -74,7 +73,6 @@ registerSketch('sk3', function (p) {
   };
 
   function buildPath() {
-    // snake-pattern path across board
     let squares = [];
     for (let r = 0; r < 8; r++) {
       if (r % 2 === 0) {
@@ -83,7 +81,7 @@ registerSketch('sk3', function (p) {
         for (let c = 7; c >= 0; c--) squares.push({ r, c });
       }
     }
-    path = squares.slice(0, 64); // first 60 of 64
+    path = squares.slice(0, 64); 
   }
 
   p.windowResized = function () {

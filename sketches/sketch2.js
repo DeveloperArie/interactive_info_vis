@@ -44,7 +44,7 @@ registerSketch('sk2', function (p) {
     p.fill('#a56b39');
     drawBarrel(cx2, cy2, w2, h2);
 
-    muzzleX = cx2 + 2.4 * w2;
+    muzzleX = cx2 + 2 * w2;
     muzzleY = cy2 + 0.03 * h2;
 
     const HH = p.nf(p.hour(),   2);
@@ -113,8 +113,8 @@ registerSketch('sk2', function (p) {
    
     p.beginShape();
     p.vertex(-w * .7, -h * .01); // left top
-    p.vertex(w * 2.4, -h * 0.02); // right top
-    p.vertex(w * 2.4, h * 0.08); // right bottom
+    p.vertex(w * 2, -h * 0.02); // right top
+    p.vertex(w * 2, h * 0.08); // right bottom
     p.vertex(-w * 1, h * 0.25); // left bottom
     p.endShape(p.CLOSE);
 
