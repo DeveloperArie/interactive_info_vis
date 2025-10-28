@@ -30,7 +30,11 @@ registerSketch('sk4', function (p) {
     p.fill(45);
     p.circle(0, 0, R_outer * 2);  
     p.fill(220);
-    p.circle(0, 0, R_inner * 2);  
+    p.circle(0, 0, R_inner * 2); 
+    
+    const curbW = laneW * 0.12;
+    drawCurbRing(R_outer + curbW * 0.5, curbW, 30);
+    drawCurbRing(R_inner - curbW * 0.5, curbW, 30);
 
     drawDashedRing(dashR, laneW * 0.08, 64);
 
@@ -50,6 +54,24 @@ registerSketch('sk4', function (p) {
       p.rotate(a + p.HALF_PI);
       p.rectMode(p.CENTER);
       p.rect(0, 0, dashLen * 1.5, dashLen * 0.35, dashLen * 0.15);
+      p.pop();
+    }
+  }
+
+  function drawCurbRing(radius, thickness, segments) {
+    const segAngle = p.TWO_PI / segments;
+    for (let i = 0; i < segments; i++) {
+      const a = i * segAngle;
+      const x = Math.cos(a) * radius;
+      const y = Math.sin(a) * radius;
+
+      p.push();
+      p.translate(x, y);
+      p.rotate(a + p.HALF_PI);
+      p.fill(i % 2 === 0 ? '#d53434' : '#f4f4f4');
+      const length = radius * segAngle * 0.95; 
+      p.rectMode(p.CENTER);
+      p.rect(0, 0, length, thickness, thickness * 0.25);
       p.pop();
     }
   }
