@@ -19,8 +19,7 @@ registerSketch('sk2', function (p) {
     const newH = Math.min(p.windowHeight, MAX);
     if (p.width !== newW || p.height !== newH) p.resizeCanvas(newW, newH);
 
-    p.background(255);
-
+    p.background(220, 225, 230);
     
     const cx = p.width * 0.18; 
     const cy = p.height * 0.5;
@@ -48,10 +47,29 @@ registerSketch('sk2', function (p) {
     muzzleX = cx2 + 2.4 * w2;
     muzzleY = cy2 + 0.03 * h2;
 
-    p.fill(40);
-    p.textSize(18);
-    p.textAlign(p.LEFT, p.TOP);
-    p.text(`${p.nf(p.hour(),2)}:${p.nf(p.minute(),2)}:${p.nf(p.second(),2)}`, 12, 10);
+    const HH = p.nf(p.hour(),   2);
+    const MM = p.nf(p.minute(), 2);
+    const SS = p.nf(p.second(), 2);
+
+    // center horizontally between stock center (cx) and muzzle tip
+    const clockX = (cx + muzzleX) / 2;
+    // place above the stock
+    const clockY = cy - h * 1.2;
+
+    // responsive font sizes
+    const baseSize = Math.min(56, Math.round(p.width * 0.05));
+
+
+    // draw HH:MM:
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textSize(baseSize);
+    p.fill(30);
+    p.text(HH + ":" + MM + ":", clockX - baseSize, clockY);
+
+    // draw SS in color, slightly larger
+    p.textSize(baseSize);
+    p.fill(220, 60, 40);                      // highlight color for seconds
+    p.text(SS, clockX + baseSize, clockY);
 
     const sNow = p.second();
     if (sNow !== lastSec) {
