@@ -19,8 +19,12 @@ registerSketch('sk4', function (p) {
     const cy = p.height / 2;
     const R_outer = Math.min(p.width, p.height) * 0.38; 
     const laneW   = R_outer * 0.18;                     
-    const R_inner = R_outer - laneW;                   
-    const dashR   = (R_outer + R_inner) / 2;           
+    const R_inner = R_outer - laneW;
+    const margin      = laneW * 0.5; 
+    const R_outerExp  = R_outer + margin; 
+    const inner  = R_inner + laneW * 0.5; 
+    const out  = R_inner + laneW * 1;                   
+          
 
     p.push();
     p.translate(cx, cy);
@@ -29,16 +33,19 @@ registerSketch('sk4', function (p) {
     p.circle(0, 0, R_inner * 2);
 
     p.fill(45);
-    p.circle(0, 0, R_outer * 2);  
+    p.circle(0, 0, R_outerExp * 2);  
     p.fill(220);
     p.circle(0, 0, R_inner * 2); 
     
     const curbW = laneW * 0.12;
-    drawCurbRing(R_outer + curbW * 0.5, curbW, 30);
+    drawCurbRing(R_outerExp + curbW * 0.5, curbW, 30);
     drawCurbRing(R_inner - curbW * 0.5, curbW, 30);
 
-    drawDashedRing(dashR, laneW * 0.08, 64);
-    drawStartFinish(-p.HALF_PI, R_inner, R_outer, laneW);
+    drawDashedRing(inner, laneW * 0.08, 64);
+
+    drawDashedRing(out, laneW * 0.08, 64);
+
+    drawStartFinish(-p.HALF_PI, R_inner, R_outerExp, laneW);
 
     p.pop()
 
@@ -62,10 +69,22 @@ registerSketch('sk4', function (p) {
     const thetaMin = -p.HALF_PI + minFrac * p.TWO_PI;
 
     const rMin = R_inner + laneW * 0.75; 
-    const mLen = laneW * 0.38;
-    const mWid = laneW * 0.24;
+    const mLen = laneW * 0.35;
+    const mWid = laneW * 0.22;
 
     drawCarRect(cx, cy, rMin, thetaMin, mLen, mWid, '#2ecc71', 'M');
+
+    const nowH        = new Date();
+    const msIntoHourH = nowH.getMinutes() * 60000 + nowH.getSeconds() * 1000 + nowH.getMilliseconds();
+    const msInto12h   = (nowH.getHours() % 12) * 3600000 + msIntoHourH;
+    const hourFrac    = msInto12h / (12 * 3600000);       
+    const thetaHour   = -p.HALF_PI + hourFrac * p.TWO_PI;
+
+    const rHour = R_inner + laneW * 1.25; 
+    const hLen  = laneW * 0.35;            
+    const hWid  = laneW * 0.22;
+
+    drawCarRect(cx, cy, rHour, thetaHour, hLen, hWid, '#0077ff', 'H');
 
   };
 
