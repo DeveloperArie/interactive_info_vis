@@ -278,12 +278,10 @@ registerSketch('sk5', function (p) {
     const x = p.width - w - 140; 
     const y = 80;
 
-    // card + shadow
     p.noStroke();
     p.fill(0, 36); p.rect(x + 3, y + 3, w, h, 12);
     p.fill(255);   p.rect(x, y, w, h, 12);
 
-    // title
     p.fill(20);
     p.textAlign(p.LEFT, p.TOP);
     p.textSize(14);
@@ -297,12 +295,10 @@ registerSketch('sk5', function (p) {
       return;
     }
 
-    // swatch
     const sw = 18, sh = 18;
     const c  = (sel.value == null) ? p.color(240) : colorFor(sel.value);
     p.fill(c); p.stroke(200); p.rect(x + 12, y + 42, sw, sh, 4);
 
-    // text lines
     p.noStroke();
     p.fill(20); p.textSize(13);
     p.text(sel.name || 'Unknown', x + 12 + sw + 8, y + 42);
