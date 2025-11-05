@@ -13,6 +13,8 @@ registerSketch('sk5', function (p) {
   let years = [], yearToIndex = new Map();
   let dataByCountry = new Map();
   let slider = null;
+  let hovered = null;  
+  let locked  = null; 
 
   const domain = [0, 2, 4, 6, 8, 10, 12, 14];
   const HEX = ['#1a9850','#5ab769','#a6d96a','#d9ef8b','#fee08b','#fdae61','#f46d43','#d73027'];
@@ -90,6 +92,19 @@ registerSketch('sk5', function (p) {
     initProjection();
   };
 
+  p.mousePressed = function () {
+  const year = +slider.value();
+  const hit = pickCountryAtMouse(year);
+  if (hit) locked = hit;
+};
+
+  p.keyPressed = function () {
+    if (p.key === 'Escape') {
+      locked = null;
+      hovered = null;
+    }
+  };
+
   p.draw = function () {
     p.background(255);
 
@@ -109,6 +124,12 @@ registerSketch('sk5', function (p) {
     }
 
     const year = +slider.value();
+    if (!locked) hovered = pickCountryAtMouse(year);
+
+    drawMap(year, (locked || hovered)?.feature);
+
+    const target = locked || hovered || null;
+    drawSidePanel(target, year); 
     drawMap(year);
     drawLegend(p.width - 90, 70, 18, Math.min(420, p.height - 180));
 
@@ -117,21 +138,29 @@ registerSketch('sk5', function (p) {
     p.text(`year=${year}`, 120, p.height - 70);
   };
 
-  function drawMap(year) {
-    p.push();
-    p.translate(20, 40);
+  function drawMap(year, highlightFeature) {
+  p.push();
+  p.translate(20, 60);
 
-    for (const feature of geojson.features) {
-      const nm = countryName(feature);
-      const v = lookupIntensity(nm, year); 
-      p.fill(v == null ? 240 : colorFor(v));
-      p.stroke(40);
-      p.strokeWeight(0.5);
+  for (const feature of geojson.features) {
+    const nm = countryName(feature);
+    const v  = lookupIntensity(nm, year);
+
+    p.fill(v == null ? 240 : colorFor(v));
+    p.stroke(60);
+    p.strokeWeight(0.5);
+
+    drawFeature(feature);
+
+    if (highlightFeature && feature === highlightFeature) {
+      p.noFill();
+      p.stroke(0);
+      p.strokeWeight(2);
       drawFeature(feature);
     }
-
-    p.pop();
   }
+  p.pop();
+}
 
   function countryName(f) {
     const props = f.properties || {};
@@ -204,4 +233,87 @@ registerSketch('sk5', function (p) {
     p.textSize(16);
     p.text(t, p.width / 2, p.height / 2);
   }
+
+  function pickCountryAtMouse(year) {
+    if (!projection || !geojson) return null;
+    const lonlat = projection.invert([p.mouseX - 20, p.mouseY - 60]); 
+    if (!lonlat) return null;
+
+    for (const f of geojson.features) {
+      if (d3.geoContains(f, lonlat)) {
+        const nm = countryName(f);
+        const v  = lookupIntensity(nm, year); 
+        return { feature: f, name: nm, value: v };
+      }
+    }
+    return null;
+  }
+
+  function drawCountryKey(sel, year) {
+    const pad = 10, w = 260, h = 76;
+    let x = p.mouseX + 16, y = p.mouseY + 16;
+
+    if (x + w > p.width - 12) x = p.width - 12 - w;
+    if (y + h > p.height - 12) y = p.height - 12 - h;
+
+    p.noStroke();
+    p.fill(0, 36); p.rect(x + 2, y + 2, w, h, 10);
+    p.fill(255);   p.rect(x, y, w, h, 10);
+
+    const sw = 18, sh = 18;
+    const c  = (sel.value == null) ? p.color(240) : colorFor(sel.value);
+    p.fill(c); p.stroke(200); p.rect(x + pad, y + pad, sw, sh, 4);
+
+    p.noStroke();
+    p.fill(20);
+    p.textAlign(p.LEFT, p.TOP);
+    p.textSize(14);
+    p.text(sel.name || 'Unknown', x + pad + sw + 8, y + pad);
+
+    p.fill(70);
+    p.textSize(12);
+    const vtxt = (sel.value == null) ? 'No data' : (sel.value.toFixed(3) + ' Mt/TWh');
+    p.text(`Year: ${year}\nIntensity: ${vtxt}\n(click to lock, Esc to clear)`,
+          x + pad, y + pad + sh + 8);
+  }
+
+  function drawSidePanel(sel, year) {
+    const w = 280, h = 110;
+    const x = p.width - w - 140; 
+    const y = 80;
+
+    // card + shadow
+    p.noStroke();
+    p.fill(0, 36); p.rect(x + 3, y + 3, w, h, 12);
+    p.fill(255);   p.rect(x, y, w, h, 12);
+
+    // title
+    p.fill(20);
+    p.textAlign(p.LEFT, p.TOP);
+    p.textSize(14);
+    p.textStyle(p.BOLD);
+    p.text('Country details', x + 12, y + 10);
+    p.textStyle(p.NORMAL);
+
+    if (!sel) {
+      p.fill(70); p.textSize(12);
+      p.text('Hover a country\nClick to lock • Esc to clear', x + 12, y + 36);
+      return;
+    }
+
+    // swatch
+    const sw = 18, sh = 18;
+    const c  = (sel.value == null) ? p.color(240) : colorFor(sel.value);
+    p.fill(c); p.stroke(200); p.rect(x + 12, y + 42, sw, sh, 4);
+
+    // text lines
+    p.noStroke();
+    p.fill(20); p.textSize(13);
+    p.text(sel.name || 'Unknown', x + 12 + sw + 8, y + 42);
+
+    p.fill(70); p.textSize(12);
+    const vtxt = (sel.value == null) ? 'No data' : `${sel.value.toFixed(3)} Mt/TWh`;
+    p.text(`Year: ${year}\nIntensity: ${vtxt}`, x + 12, y + 70);
+  }
+
 });
