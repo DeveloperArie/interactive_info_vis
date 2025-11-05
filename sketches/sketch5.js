@@ -112,7 +112,7 @@ registerSketch('sk5', function (p) {
     p.fill(30);
     p.textAlign(p.LEFT, p.TOP);
     p.textSize(20);
-    p.text('Carbon Intensity (Mt CO₂ per TWh) by Country, Over Time', 28, 20);
+    p.text('How Much CO₂ Is Emitted for Each Unit of Energy?', 28, 20);
 
     if (!geojson || !projection) {
       drawMsg('Loading map…');
@@ -132,10 +132,6 @@ registerSketch('sk5', function (p) {
     drawSidePanel(target, year); 
     drawMap(year);
     drawLegend(p.width - 90, 70, 18, Math.min(420, p.height - 180));
-
-    p.textAlign(p.LEFT, p.CENTER);
-    p.textSize(16);
-    p.text(`year=${year}`, 120, p.height - 70);
   };
 
   function drawMap(year, highlightFeature) {
